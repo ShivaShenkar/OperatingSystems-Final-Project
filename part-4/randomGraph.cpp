@@ -5,7 +5,7 @@
 #include <set>
 #include <chrono>
 
-int generateRandomGraph(int v,int e,int s=random()){
+Graph generateRandomGraph(int v,int e,int s=random()){
     mt19937 rng;
     rng.seed(s);
     cout<<"Seed: "<<s<<endl;
@@ -32,7 +32,13 @@ int generateRandomGraph(int v,int e,int s=random()){
     }
 
     cout<<"Generated Random Graph with "<<v<<" vertices and "<<e<<" edges"<<endl;
-    findEulerianCircle(g);
-    cout<<endl;
-    return 0;
+    cout<<"Edges:"<<endl;
+    for(auto &edge : currEdges){
+        for(auto &v : edge){
+            cout<<v<<" ";
+        }
+        cout<<endl;
+    }
+    
+    return g;
 }

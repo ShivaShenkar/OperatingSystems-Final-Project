@@ -49,11 +49,17 @@ string proccess_message(const string& msg){
     string seed;
     string res = ""; 
     if(ss1>>n1>>n2){
+        if(n1<=0 || n2<0 || n2> (n1*(n1-1))/2){
+            return "Invalid number of vertices or edges. Ensure vertices > 0 and 0 <= edges <= vertices*(vertices-1)/2\n";
+        }
         Graph g = generateRandomGraph(n1,n2);
         res = findEulerianCircle(g);
         return res;
     }
     else if(ss1>>n1>>n2>>seed){
+        if(n1<=0 || n2<0 || n2> (n1*(n1-1))/2){
+            return "Invalid number of vertices or edges. Ensure vertices > 0 and 0 <= edges <= vertices*(vertices-1)/2\n";
+        }
         try{
             int s = stoi(seed);
             Graph g = generateRandomGraph(n1,n2,s);
@@ -70,7 +76,7 @@ string proccess_message(const string& msg){
             return res;
         }
     }
-    return "Invalid input format. Please provide <vertices> <edges> [seed]";
+    return "Invalid input format. Please provide <vertices> <edges> [seed]\n";
 
 }
 

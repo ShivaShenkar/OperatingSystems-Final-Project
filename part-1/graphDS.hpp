@@ -12,6 +12,7 @@ class Graph{
         bool isConnected(int i,int j) const;
         double getWeight(int i,int j) const;
         void addEdge(int i,int j,double weight);
+        void addDirectedEdge(int i,int j,double weight);
         void removeEdge(int i,int j);
         int getDegree(int v) const;
 };

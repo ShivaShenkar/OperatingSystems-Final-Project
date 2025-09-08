@@ -49,7 +49,7 @@ Graph::Graph(const Graph& g){
     for(int i=0;i<n;i++){
         for(int j=0;j<n;j++){
             edges[i][j] = g.isConnected(i,j);
-            if(this->isConnected(i,j))
+            if(edges[i][j])
                 weights[i][j] = g.getWeight(i,j);
         }
     }
@@ -91,6 +91,12 @@ void Graph::addEdge(int i,int j,double weight){
         weights[j][i] = weight;
     }
 }
+void Graph::addDirectedEdge(int i,int j,double weight){
+    if(i!=j&&i>=0&&j>=0&&i<n&&j<n){
+        edges[i][j] = true;
+        weights[i][j] = weight;;
+    }
+}
 void Graph::removeEdge(int i,int j){
     if(i!=j&&i>=0&&j>=0&&i<n&&j<n){
         edges[i][j] = false;
@@ -101,7 +107,7 @@ void Graph::removeEdge(int i,int j){
 int Graph::getDegree(int v) const {
         int deg = 0;
         for (int i = 0; i < n; ++i){
-            deg += (this->isConnected(v,i)) ? 1:0;
+            deg += (this->edges[v][i]) ? 1:0;
         }
         return deg;
 }

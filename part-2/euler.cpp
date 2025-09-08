@@ -25,7 +25,7 @@ bool isGraphConnected(const Graph& g) {
         if(g.getVertices()==1)
             return true;
         return false;
-    } return true; // No edges in graph
+    }
     dfs(g,start, visited);
     for (int i = 0; i < g.getVertices(); ++i)
         if (g.getDegree(i) > 0 && !visited[i])
@@ -46,11 +46,11 @@ bool hasEulerianCircle(const Graph& g) {
     return true;
 }
 
-void findEulerianCircle(const Graph& g) {
+string findEulerianCircle(const Graph& g) {
     Graph newGraph = g;
     if (!hasEulerianCircle(newGraph)) {
         cout << "No euler circle in the Graph" << endl;
-        return;
+        return "No euler circle in the Graph";
     }
     stack<int> currPath;
     vector<int> circle;
@@ -78,8 +78,12 @@ void findEulerianCircle(const Graph& g) {
             currPath.pop();
         }
     }
-    cout << "Eulerian Circle: ";
-    for (auto it = circle.rbegin(); it != circle.rend(); ++it)
+    string msg = "Eulerian Circle: ";
+    cout << msg ;
+    for (auto it = circle.rbegin(); it != circle.rend(); ++it){
         cout << *it << " ";
+        msg+= to_string(*it)+ " ";
+    }
     cout << endl;
+    return msg;
 }

@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <string>
 
-/**
- * make sure ./main in part-3 is compiled!! * 
-**/
 int main(){
 
     #define ITERATIONS 30
@@ -14,7 +11,8 @@ int main(){
     for(int i=0;i<ITERATIONS;i++){
         randV = (random()%MAX_VERTICES)+1;
         randE = random()%(randV*(randV-1)/2+1);
-        generateRandomGraph(randV,randE);
+        Graph g = generateRandomGraph(randV,randE);
+        findEulerianCircle(g);
     }
 
 
