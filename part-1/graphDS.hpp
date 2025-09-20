@@ -11,6 +11,7 @@ class Graph{
         int getVertices() const {return n;}
         bool isConnected(int i,int j) const;
         double getWeight(int i,int j) const;
+        void setWeight(int i,int j, double weight);
         void addEdge(int i,int j,double weight);
         void addDirectedEdge(int i,int j,double weight);
         void removeEdge(int i,int j);

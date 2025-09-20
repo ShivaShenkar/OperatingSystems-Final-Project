@@ -1,3 +1,4 @@
+#pragma once
 #include "union_find.cpp"
 #include "../part-2/euler.cpp"
 #include <algorithm>
@@ -198,11 +199,11 @@ vector<pair<twoPoints,int>> findAugmentingPath(const FlowNetwork& fn){
 }   
 
 
-FlowNetwork edmonds_carp(const Graph& g){
+pair<FlowNetwork,bool> edmonds_carp(const Graph& g){
     FlowNetwork fn(g);
     if(!isPathConnected(g,0,g.getVertices()-1)){
         cout<<"No path from source to sink"<<endl;
-        return fn;
+        return {fn,false};
     }
     while(true){
         vector<pair<twoPoints,int>> augPath = findAugmentingPath(fn);
@@ -211,22 +212,37 @@ FlowNetwork edmonds_carp(const Graph& g){
         double minResCap = numeric_limits<double>::max(); // minimum residual capacity of the augmenting path
         for(auto& [edge,isForward]: augPath){
 
-            if(isForward) //if edge is forward
-                minResCap = min(minResCap,fn.getresidualCapacity(edge.second,edge.first));
-            else // edge is reverse
+            if(isForward==0) //if edge is forward
                 minResCap = min(minResCap,fn.getFlow(edge.first,edge.second));
+            else if(isForward==1)// edge is reverse
+                minResCap = min(minResCap,fn.getresidualCapacity(edge.second,edge.first));
+            else // both reverse and forward
+                minResCap = min(minResCap,fn.getresidualCapacity(edge.second,edge.first)+fn.getFlow(edge.first,edge.second));
 
         }
 
         for(auto& [edge,isForward]: augPath){
-            if(isForward) //if edge is forward
-                fn.addFlow(edge.second,edge.first,minResCap);
-            else // edge is reverse
+            if(isForward==0) //if edge is reverse
                 fn.addFlow(edge.first,edge.second,-minResCap);
+            else if(isForward==1) // edge is forward
+                fn.addFlow(edge.second,edge.first,minResCap);
+            else{
+                double sub1 =minResCap-fn.getresidualCapacity(edge.second,edge.first);
+                double sub2 =minResCap-fn.getFlow(edge.first,edge.second);
+                if(sub1<=0) // new flow can be stored just by the forward edge
+                    fn.addFlow(edge.second,edge.first,minResCap);
+                else if(sub2<=0)   //new flow can be stored just by the reverse edge
+                    fn.addFlow(edge.first,edge.second,-minResCap);
+                else{//new flow needed to be stored both in forward and reverse edge
+                    fn.addFlow(edge.second,edge.first,fn.getresidualCapacity(edge.second,edge.first)); //fill the forward edge
+                    fn.addFlow(edge.first,edge.second,-sub1); //add the remaining to reverse edge
+                }
+            }
+               
         }
 
     }
-    return fn;
+    return {fn,true};
 
 }
 
@@ -259,6 +275,7 @@ vector<int> max_clique(const Graph& g){
     return maxClique;
 }
 
+//////////////////////////////Strategy classes//////////////////////////////////
 
 class AlgoStrategy{
     protected:
@@ -300,16 +317,61 @@ class EdmondsKarpAlgo: public AlgoStrategy{
     public:
         EdmondsKarpAlgo(Graph& graph): AlgoStrategy(graph){}
         void execute() override{
-            FlowNetwork fn = edmonds_carp(g);
+            auto pfn =edmonds_carp(g);
+            if(!pfn.second)
+                return;
+            FlowNetwork fn = edmonds_carp(g).first;
             cout << "Max Flow from source to sink (Edmonds-Karp Algorithm):" << endl;
             double maxFlow = 0.0;
-            for(int i=0;i<g.getVertices();++i){
-                if(fn.isConnected(0,i)){
-                    maxFlow += fn.getFlow(0,i);
+            int n = fn.getVertices();
+            for(int i=0; i<n;i++){
+                for(int j=0;j<n;j++){
+                    if(fn.isConnected(i,j)){
+                        cout<<"Edge: "<<i<<" "<<j<<", Capacity: "<<fn.getCapacity(i,j)<<", Flow: "<<fn.getFlow(i,j)<<endl;
+                        if(i==0)
+                            maxFlow+=fn.getFlow(i,j);
+                    }
                 }
             }
-            cout << "Maximum Flow: " << maxFlow << endl;
+            cout<<"Max flow of the network: "<<maxFlow<<endl;
+            
         }
 };
+
+class MaxCliqueAlgo: public AlgoStrategy{
+    public:
+        MaxCliqueAlgo(Graph& graph) : AlgoStrategy(graph){}
+        void execute() override{
+            vector<int> mc = max_clique(g);
+            cout<<"Vertices of the max clique in the graph: "<<endl;
+            for(auto& item : mc){
+                cout<<item<<" ";
+            }
+            cout<<endl;
+        }
+};
+
+
+class AlgoFactory{
+    public:
+    static AlgoStrategy* createAlgo(string algo,Graph& g){
+        if(algo=="kruskal"){
+            return new KruskalAlgo(g);
+        }
+        else if(algo=="scc"){
+            return new SCCAlgo(g);
+        }
+        else if(algo=="edmonds_karp"){
+            return new EdmondsKarpAlgo(g);
+        }
+        else if(algo=="max_clique"){
+            return new MaxCliqueAlgo(g);
+        }
+        return nullptr;
+    }
+
+};
+
+
 
 

@@ -43,41 +43,8 @@ int setup_socket(){
 }
 
 string proccess_message(const string& msg){
-    stringstream ss1(msg);
-    stringstream ss2(msg);
-    int n1,n2;
-    string seed;
-    string res = ""; 
-    if(ss1>>n1>>n2){
-        if(n1<=0 || n2<0 || n2> (n1*(n1-1))/2){
-            return "Invalid number of vertices or edges. Ensure vertices > 0 and 0 <= edges <= vertices*(vertices-1)/2\n";
-        }
-        Graph g = generateRandomGraph(n1,n2);
-        res = findEulerianCircle(g);
-        return res;
-    }
-    else if(ss1>>n1>>n2>>seed){
-        if(n1<=0 || n2<0 || n2> (n1*(n1-1))/2){
-            return "Invalid number of vertices or edges. Ensure vertices > 0 and 0 <= edges <= vertices*(vertices-1)/2\n";
-        }
-        try{
-            int s = stoi(seed);
-            Graph g = generateRandomGraph(n1,n2,s);
-            res = findEulerianCircle(g);
-            return res;
-        }
-        catch(...){
-            int seedNum = 0; 
-            size_t len = strlen(seed.c_str());
-            size_t copy_len = min(len, sizeof(seedNum));
-            memcpy(&seedNum, seed.c_str(), copy_len);
-            Graph g = generateRandomGraph(n1,n2,seedNum);
-            res = findEulerianCircle(g);
-            return res;
-        }
-    }
-    return "Invalid input format. Please provide <vertices> <edges> [seed]\n";
-
+    
+    
 }
 
 

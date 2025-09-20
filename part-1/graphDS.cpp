@@ -38,6 +38,12 @@ double Graph::getWeight(int i,int j) const{
     throw ("invalid vertices\no edge between the two vertices");
     
 }
+void Graph::setWeight(int i,int j, double weight){
+    if(isConnected(i,j))
+        weights[i][j] = weight;
+    else
+        throw ("invalid vertices\no edge between the two vertices");
+}
 Graph::Graph(const Graph& g){
     this->n = g.getVertices();
     this->edges = new bool*[n];
