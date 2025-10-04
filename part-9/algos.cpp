@@ -281,7 +281,7 @@ std::string MaxCliqueAlgo::execute() {
     return oss.str();
 }
 
-AlgoStrategy* AlgoFactory::createAlgo(std::string& algoName, Graph& g) {
+AlgoStrategy* AlgoFactory::createAlgo(const std::string& algoName, Graph& g) {
     std::string lower = algoName;
     std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
 

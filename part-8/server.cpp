@@ -1,6 +1,9 @@
 #include "server.hpp"
+#include "algos.hpp"
+#include "randomGraph.hpp"
 #include <memory>
-
+#include <thread>
+#include <sstream>
 
 using namespace std;
 
@@ -84,10 +87,15 @@ void Server::handle_client_message(int index) {
         cout << "Client disconnected." << endl;
     } else {
         buffer[n] = '\0';
-        cout << "Message from client: " << buffer << endl;
-        string response = process_message(buffer);
-        send(fds[index].fd, response.c_str(), response.size(), 0);
-        cout << "Sent response to client." << endl;
+        string msg(buffer);
+
+        // Spawn a detached worker thread
+        int client_fd = fds[index].fd;
+        thread([this, msg, client_fd]() {
+            string response = process_message(msg);
+            send(client_fd, response.c_str(), response.size(), 0);
+            cout << "Processed request for client " << client_fd << endl;
+        }).detach();
     }
 }
 
@@ -95,15 +103,17 @@ std::string Server::process_message(const std::string& msg) {
     stringstream ss(msg);
     string algo;
     int vertices, edges;
-    ss >> algo >> vertices >> edges ;
+    ss >> algo >> vertices >> edges;
     if (algo.empty()) return "Invalid request format.\n";
 
-    if (vertices <= 0 || edges<0) return "Error: number of vertices or edges is not possible.\n";
+    if (vertices <= 0 || edges < 0) return "Error: invalid number of vertices or edges.\n";
 
-    Graph g = generateRandomGraph(vertices ,edges);
-    AlgoStrategy* s(AlgoFactory::createAlgo(algo,g));
+    Graph g = generateRandomGraph(vertices, edges);
 
-    std::string result=s->execute();
-    delete s;
-    return result;
+    try {
+        unique_ptr<AlgoStrategy> s(AlgoFactory::createAlgo(algo, g));
+        return s->execute();  // using factory + polymorphism
+    } catch (const exception& ex) {
+        return string("Error: ") + ex.what() + "\n";
+    }
 }

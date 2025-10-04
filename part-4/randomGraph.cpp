@@ -1,4 +1,4 @@
-#include "../part-2/euler.cpp"
+#include "/home/yuvaliloo/Desktop/OSPROJECT/OperatingSystems-Final-Project/part-2/euler.cpp"
 #include <getopt.h>
 #include <cstring>
 #include <random>

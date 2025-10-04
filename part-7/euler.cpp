@@ -1,17 +1,15 @@
-#pragma once
-#include "graphDS.hpp"
-#include <vector>
-#include <stack>
-#include <iostream>
+#include "euler.hpp"
+
 using namespace std;
 
-void dfs(const Graph& g,int v, vector<bool>& visited) {
+void dfs(const Graph& g, int v, vector<bool>& visited) {
     visited[v] = true;
-    for (int i = 0; i < g.getVertices(); ++i){
+    for (int i = 0; i < g.getVertices(); ++i) {
         if (g.isConnected(v,i) && !visited[i])
             dfs(g,i, visited);
     }
 }
+
 bool isGraphConnected(const Graph& g) {
     vector<bool> visited(g.getVertices(), false);
     int start = -1;
@@ -21,25 +19,25 @@ bool isGraphConnected(const Graph& g) {
             break;
         }
     }
-    if (start == -1){
-        if(g.getVertices()==1)
-            return true;
-        return false;
+    if (start == -1) {
+        return (g.getVertices() == 1);
     }
     dfs(g,start, visited);
-    for (int i = 0; i < g.getVertices(); ++i)
+    for (int i = 0; i < g.getVertices(); ++i) {
         if (g.getDegree(i) > 0 && !visited[i])
             return false;
+    }
     return true;
 }
+
 bool hasEulerianCircle(const Graph& g) {
-    if (!isGraphConnected(g)){
-        cout<<"Graph is not connected"<<endl;
+    if (!isGraphConnected(g)) {
+        cout << "Graph is not connected" << endl;
         return false;
     }
-    for (int i = 0; i < g.getVertices(); ++i){
-        if (g.getDegree(i) % 2 != 0){
-            cout<<"The vertex "<<i<<" has odd degree"<<endl;
+    for (int i = 0; i < g.getVertices(); ++i) {
+        if (g.getDegree(i) % 2 != 0) {
+            cout << "The vertex " << i << " has odd degree" << endl;
             return false;
         }
     }
@@ -55,11 +53,12 @@ string findEulerianCircle(const Graph& g) {
     stack<int> currPath;
     vector<int> circle;
     int curr = 0;
-    for (int i = 0; i < newGraph.getVertices(); ++i)
+    for (int i = 0; i < newGraph.getVertices(); ++i) {
         if (newGraph.getDegree(i) > 0) {
             curr = i;
             break;
         }
+    }
     currPath.push(curr);
     while (!currPath.empty()) {
         if (newGraph.getDegree(curr) > 0) {
@@ -71,18 +70,18 @@ string findEulerianCircle(const Graph& g) {
                     break;
                 }
             }
-        } 
-        else {
+        } else {
             circle.push_back(curr);
             curr = currPath.top();
             currPath.pop();
         }
     }
+
     string msg = "Eulerian Circle: ";
-    cout << msg ;
-    for (auto it = circle.rbegin(); it != circle.rend(); ++it){
+    cout << msg;
+    for (auto it = circle.rbegin(); it != circle.rend(); ++it) {
         cout << *it << " ";
-        msg+= to_string(*it)+ " ";
+        msg += to_string(*it) + " ";
     }
     cout << endl;
     return msg;
